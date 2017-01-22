@@ -1,0 +1,6 @@
+[package]
+name = "diet"
+version = "0.1.0"
+authors = ["Alexander Krotov <ilabdsf@gmail.com>"]
+
+[dependencies]
