@@ -74,7 +74,7 @@ impl<T: Ord + Step> Node<T> {
 
     pub fn insert_link(link: &mut Link<T>, segment: Segment<T>) {
         if let Some(ref mut node) = *link {
-            Node::insert_link(&mut node.left, segment);
+            node.insert(segment);
         } else {
             *link = Some(box Node::new(segment));
         }
