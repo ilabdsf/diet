@@ -208,3 +208,62 @@ impl<T: Ord> Segment<T> {
         &self.left <= value && value <= &self.right
     }
 }
+
+pub struct DietIterator<T: Ord + Step> {
+    queue: Vec<Box<Node<T>>>,
+}
+
+impl<T: Ord + Step> IntoIterator for Diet<T> {
+    type Item = Segment<T>;
+    type IntoIter = DietIterator<T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        let mut iter = DietIterator { queue: Vec::new() };
+        iter.descend(self.root);
+        iter
+    }
+}
+
+impl<T: Ord + Step> DietIterator<T> {
+    fn descend(&mut self, mut current: Link<T>) {
+        loop {
+            if current.is_none() {
+                break;
+            }
+            let mut node = current.take().unwrap();
+            current = node.left.take();
+            self.queue.push(node);
+        }
+    }
+}
+
+impl<T: Ord + Step> Iterator for DietIterator<T> {
+    type Item = Segment<T>;
+
+    fn next(&mut self) -> Option<Segment<T>> {
+        if let Some(mut result) = self.queue.pop() {
+            if let Some(right) = result.right.take() {
+                self.descend(Some(right));
+            }
+            Some(result.segment)
+        } else {
+            None
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_consuming_iterator() {
+        let mut diet = Diet::new();
+        diet.insert(Segment::new(5, 15));
+        diet.insert(Segment::new(20, 40));
+        diet.insert(Segment::new(100, 200));
+        diet.insert(Segment::new(10, 25));
+        let v: Vec<Segment<i32>> = diet.into_iter().collect();
+        assert_eq!(vec![Segment::new(5, 40), Segment::new(100, 200)], v);
+    }
+}
