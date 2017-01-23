@@ -207,6 +207,14 @@ impl<T: Ord> Segment<T> {
     pub fn contains(&self, value: &T) -> bool {
         &self.left <= value && value <= &self.right
     }
+
+    pub fn left(&self) -> &T {
+        &self.left
+    }
+
+    pub fn right(&self) -> &T {
+        &self.right
+    }
 }
 
 pub struct DietIterator<T: Ord + Step> {
